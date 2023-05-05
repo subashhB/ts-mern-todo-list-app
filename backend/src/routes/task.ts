@@ -1,10 +1,13 @@
 import express from "express";
-import * as NotesController from "../controllers/taskController";
+import * as TaskController from "../controllers/taskController";
 
 const router = express.Router();
 
-router.get("/", NotesController.getTasks);
-router.post("/", NotesController.createTask);
-router.get("/:taskId", NotesController.getTaskById);
+//Routes for the every task api
+router.get("/", TaskController.getTasks);
+router.get("/:taskId", TaskController.getTaskById);
+router.post("/", TaskController.createTask);
+router.patch("/:taskId", TaskController.updateTask);
+router.delete("/:taskId", TaskController.deleteTask);
 
 export default router;
