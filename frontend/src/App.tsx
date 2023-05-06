@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
-import { Task } from './models/task';
+import { Task as TaskModel } from './models/task';
+import Task from './components/Task';
 
 function App() {
-  const[tasks, setTasks] = useState<Task[]>([]);
+  const[tasks, setTasks] = useState<TaskModel[]>([]);
   useEffect(()=>{
     async function loadTasks() {
       try{
@@ -19,7 +19,7 @@ function App() {
   },[]);
   return (
     <div className="App">
-      {JSON.stringify(tasks) }
+      {tasks.map(task => (<Task key={task._id} task = {task}/>)) }
     </div>
   );
 }
