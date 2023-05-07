@@ -3,7 +3,7 @@ import TaskModel from "../models/task";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 
-export const getTasks: RequestHandler = async (req,res,next)=>{
+export const getAllTasks: RequestHandler = async (req,res,next)=>{
     try{
         const tasks = await TaskModel.find().exec();
         res.status(200).json(tasks);
