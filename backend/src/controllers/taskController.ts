@@ -53,12 +53,11 @@ interface UpdateTaskParams{
 interface UpdateTaskBody{
     title?: string,
     description?: string,
-    completed: boolean,
 }
 
 export const updateTask: RequestHandler<UpdateTaskParams, unknown, UpdateTaskBody, unknown> = async(req, res, next) =>{
     const { taskId } = req.params;
-    const { title: newTitle, description: newDescription, completed: newStatus } = req.body;
+    const { title: newTitle, description: newDescription} = req.body;
     console.log(req.body)
     try {
         if(!mongoose.isValidObjectId(taskId)){
@@ -75,7 +74,6 @@ export const updateTask: RequestHandler<UpdateTaskParams, unknown, UpdateTaskBod
         
         task.title = newTitle;
         task.description = newDescription;
-        task.completed = newStatus;
         const updatedTask = await task.save();
         res.status(200).json(updatedTask);
     } catch (error) {
@@ -99,6 +97,25 @@ export const deleteTask: RequestHandler = async(req, res, next) =>{
         res.sendStatus(204);
 
     } catch (error) {
+        next(error);
+    }
+}
+
+export const completeTask: RequestHandler = async(req, res, next)=>{
+    const{ taskId } = req.params;
+    try{
+        if(!mongoose.isValidObjectId(taskId)){
+            throw createHttpError(400, "Invalid Task Id");
+        }
+        const task = await TaskModel.findById(taskId).exec();
+        if(!task){
+            throw createHttpError(404, "Task not found");
+        }
+        task.completed = true;
+        const completedTask = await task.save();
+        res.status(200).json(completedTask);
+        
+    }catch(error){
         next(error);
     }
 }

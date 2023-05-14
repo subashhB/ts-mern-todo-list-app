@@ -9,5 +9,6 @@ router.get("/:taskId", TaskController.getTaskById);
 router.post("/", TaskController.createTask);
 router.patch("/:taskId", TaskController.updateTask);
 router.delete("/:taskId", TaskController.deleteTask);
+router.patch('/complete/:taskId', TaskController.completeTask);
 
 export default router;
