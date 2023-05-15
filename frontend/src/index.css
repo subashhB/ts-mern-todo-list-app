@@ -52,3 +52,15 @@ body{
   opacity: 0.5;
   font-size: 0.7em;
 }
+
+.task-hr{
+  margin-top: 50px;
+}
+
+.delete-button{
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  opacity: 0.5;
+  cursor: pointer;
+}
