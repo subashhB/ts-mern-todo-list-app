@@ -32,6 +32,17 @@ export async function createTask(task: TaskInput): Promise<Task>{
     return res.json();
 } 
 
+export async function updateTask(taskId: string, task: TaskInput): Promise<Task>{
+    const res = await fetchData("/api/tasks/" + taskId,{
+        method: "PATCH",
+        headers:{
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+    });
+    return res.json();
+}
+
 export async function deleteTask(taskId: string){
     await fetchData("/api/tasks/" + taskId, { method: "DELETE" });
 }

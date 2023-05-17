@@ -5,17 +5,29 @@ import { useForm } from 'react-hook-form';
 import { TaskInput } from '../networks/task_api';
 import * as TaskApi from '../networks/task_api';
 
-interface AddTaskDialogProps{
+interface AddEditTaskDialogProps{
+    taskToEdit?: Task,
     onDismiss: ()=>void,
     onTaskSaved: (task: Task) => void,
 }
 
-const AddTaskDialog = ({onDismiss, onTaskSaved}: AddTaskDialogProps) => {
-  const { register, handleSubmit, formState:{errors, isSubmitting}} = useForm<TaskInput>();
+const AddEditTaskDialog = ({taskToEdit, onDismiss, onTaskSaved}: AddEditTaskDialogProps) => {
+  const { register, handleSubmit, formState:{errors, isSubmitting}} = useForm<TaskInput>({
+    defaultValues: {
+      title: taskToEdit && taskToEdit.title ? taskToEdit.title : "",
+      description: taskToEdit && taskToEdit.description ? taskToEdit.description : "",
+    }
+  });
 
   async function onSubmit(input: TaskInput){
     try{
-      const response = await TaskApi.createTask(input);
+      let response: Task;
+      if(taskToEdit){
+        response = await TaskApi.updateTask(taskToEdit._id, input);
+      }else{
+        response = await TaskApi.createTask(input);
+      }
+       
       onTaskSaved(response);
       
     }catch(error){
@@ -28,12 +40,12 @@ const AddTaskDialog = ({onDismiss, onTaskSaved}: AddTaskDialogProps) => {
     <Modal show onHide={onDismiss}>
         <Modal.Header closeButton>
             <Modal.Title>
-                Create a New Task To-Do
+                { taskToEdit ? "Edit Task" : "Create a New Task To-Do"}
             </Modal.Title>
         </Modal.Header>
         
         <Modal.Body>
-          <Form id='addTaskForm' onSubmit={handleSubmit(onSubmit)}>
+          <Form id='addEditTaskForm' onSubmit={handleSubmit(onSubmit)}>
             <Form.Group className="mb-3" >
               <Form.Control
                 type="text"
@@ -58,7 +70,7 @@ const AddTaskDialog = ({onDismiss, onTaskSaved}: AddTaskDialogProps) => {
         <Modal.Footer>
           <Button
             type='submit'
-            form='addTaskForm'
+            form='addEditTaskForm'
             disabled={isSubmitting}
           >
             Done
@@ -68,4 +80,4 @@ const AddTaskDialog = ({onDismiss, onTaskSaved}: AddTaskDialogProps) => {
   )
 }
 
-export default AddTaskDialog;
+export default AddEditTaskDialog;

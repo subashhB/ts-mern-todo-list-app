@@ -4,17 +4,18 @@ import Button from "react-bootstrap/esm/Button";
 import { Task as TaskModel } from "./models/task";
 import Task from "./components/Task";
 import * as TasksApi from "./networks/task_api";
-import AddTaskDialog from "./components/AddTaskDialog";
+import AddEditTaskDialog from "./components/AddEditTaskDialog";
 import { FaPlus } from "react-icons/fa";
 
 function App() {
   const [tasks, setTasks] = useState<TaskModel[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<TaskModel | null>(null);
 
-  async function deleteTask(task: TaskModel){
+  async function deleteTask(task: TaskModel) {
     try {
       await TasksApi.deleteTask(task._id);
-      setTasks(tasks.filter(existingTask => existingTask._id !== task._id));
+      setTasks(tasks.filter((existingTask) => existingTask._id !== task._id));
     } catch (error) {
       console.error(error);
       alert(error);
@@ -42,19 +43,35 @@ function App() {
             setShowModal(true);
           }}
         >
-          <FaPlus style={{marginRight: '10px'}}/> 
+          <FaPlus style={{ marginRight: "10px" }} />
           Add new Task
         </Button>
         {tasks.map((task) => (
-          <Task onDeleteTaskClicked={deleteTask} key={task._id} task={task} />
+          // *It is similar to (note)=>{setTaskToEdit(note)}
+          <Task
+            onTaskClicked={setTaskToEdit}
+            onDeleteTaskClicked={deleteTask}
+            key={task._id}
+            task={task}
+          />
         ))}
         {showModal && (
-          <AddTaskDialog
+          <AddEditTaskDialog
             onDismiss={() => setShowModal(false)}
             onTaskSaved={(newTask) => {
               console.log(showModal);
               setTasks([...tasks, newTask]);
               setShowModal(false);
+            }}
+          />
+        )}
+        {taskToEdit && (
+          <AddEditTaskDialog
+            taskToEdit={taskToEdit}
+            onDismiss={()=>{setTaskToEdit(null)}}
+            onTaskSaved={(taskToEdit)=>{
+              setTasks(tasks.map(existingTask => existingTask._id === taskToEdit._id ? taskToEdit: existingTask))
+              setTaskToEdit(null);
             }}
           />
         )}

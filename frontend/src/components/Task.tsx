@@ -4,11 +4,12 @@ import { formatDate } from "../utils/formatDate";
 import { MdDelete } from "react-icons/md";
 
 interface TaskProps {
-  task: TaskModel,
-  onDeleteTaskClicked: (task: TaskModel) => void,
+  task: TaskModel;
+  onTaskClicked: (task: TaskModel) => void;
+  onDeleteTaskClicked: (task: TaskModel) => void;
 }
 
-const Task = ({ task, onDeleteTaskClicked }: TaskProps) => {
+const Task = ({ task, onTaskClicked, onDeleteTaskClicked }: TaskProps) => {
   let createdUpdatedText: string;
   if (task.updatedAt > task.createdAt) {
     createdUpdatedText = `Updated: ${formatDate(task.updatedAt)}`;
@@ -20,6 +21,9 @@ const Task = ({ task, onDeleteTaskClicked }: TaskProps) => {
       className={
         task.completed ? "todo-list-completed" : "todo-list-incomplete"
       }
+      onClick={() => {
+        onTaskClicked(task);
+      }}
     >
       <h4>{task.title}</h4>{" "}
       <span className="status">{task.completed ? "Completed" : "ToDo"}</span>

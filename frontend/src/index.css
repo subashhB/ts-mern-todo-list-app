@@ -20,6 +20,11 @@ body{
   padding: 20px;
   position: relative;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+.todo-list-completed:hover, .todo-list-incomplete:hover{
+  border: 1px solid #333;
+  box-shadow: 5px 5px 10px rgba(0,0,0,0.25);
 }
 
 .todo-list-completed h4{
