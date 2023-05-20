@@ -22,6 +22,16 @@ function App() {
     }
   }
 
+  async function completeTask(task: TaskModel){
+    try{
+      await TasksApi.completeTask(task._id);
+      setTasks(tasks.map(existingTask => existingTask._id === task._id ? {...existingTask, completed: true} : existingTask))
+    }catch(error){
+      console.error(error);
+      alert(error);
+    }
+  }
+
   useEffect(() => {
     async function loadTasks() {
       try {
@@ -50,6 +60,7 @@ function App() {
           // *It is similar to (note)=>{setTaskToEdit(note)}
           <Task
             onTaskClicked={setTaskToEdit}
+            onCompleteTaskClicked={completeTask}
             onDeleteTaskClicked={deleteTask}
             key={task._id}
             task={task}

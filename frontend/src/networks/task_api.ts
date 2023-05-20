@@ -46,3 +46,9 @@ export async function updateTask(taskId: string, task: TaskInput): Promise<Task>
 export async function deleteTask(taskId: string){
     await fetchData("/api/tasks/" + taskId, { method: "DELETE" });
 }
+
+export async function completeTask(taskId: string){
+    await fetchData("/api/tasks/complete/" + taskId, {
+        method: "PATCH"
+    });
+}
