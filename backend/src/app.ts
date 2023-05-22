@@ -1,14 +1,16 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import taskRoutes from "./routes/task";
+import userRoutes from "./routes/user";
 import morgan from "morgan";
 import createHttpError, { isHttpError } from "http-errors";
 
 const app = express();
 
 app.use(morgan("dev"));
-app.use(express.json())
-app.use('/api/tasks', taskRoutes)
+app.use(express.json());
+app.use('/api/tasks', taskRoutes);
+app.use('/api/users', userRoutes);
 
 app.use((req,res,next)=>{  
     next(createHttpError(404,"Endpoint not found."));
