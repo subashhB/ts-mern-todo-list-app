@@ -17,7 +17,7 @@ export const signUp: RequestHandler<unknown, unknown,SignUpBody, unknown> = asyn
         }
         const existingUsername = await UserModel.findOne({username: username}).exec();
         if(existingUsername){
-            throw createHttpError(409, `Username: ${existingUsername} already exists. Please proceed with another username.`);
+            throw createHttpError(409, `Username: ${existingUsername.username} already exists. Please proceed with another username.`);
         }
         const existingEmail = await UserModel.findOne({email: email}).exec();
         if(existingEmail){
@@ -30,8 +30,50 @@ export const signUp: RequestHandler<unknown, unknown,SignUpBody, unknown> = asyn
             email: email,
             password: passwordHashed,
         });
+        req.session.userId = newUser._id;
         res.status(201).json(newUser);
     }catch(error){
         next(error);
     }
+}
+
+interface LoginBody{
+    username?: string,
+    password?: string,
+}
+
+export const login: RequestHandler <unknown, unknown, LoginBody, unknown> = async (req, res, next) =>{
+    const { username, password } = req.body;
+
+    try {
+        if(!username || !password){
+            throw createHttpError(400, "Parameters Missing");
+        }
+
+        const user = await UserModel.findOne({ username: username }).select("+password +email").exec();
+
+        if(!user){
+            throw createHttpError(401, "Invalid Credentials");
+        }
+        console.log(username, password);
+        const passwordMatch = user.password && await bcrypt.compare(password, user.password);
+        if(!passwordMatch){
+            throw createHttpError(401, "Invalid Credentials");
+        }
+        
+        req.session.userId = user._id;
+        res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const logout: RequestHandler =(req, res, next) =>{
+    req.session.destroy((error)=>{
+        if(error){
+            next(error);
+        }else{
+            res.sendStatus(200);
+        }
+    })
 }
