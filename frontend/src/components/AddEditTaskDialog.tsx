@@ -4,6 +4,7 @@ import { Task } from '../models/task';
 import { useForm } from 'react-hook-form';
 import { TaskInput } from '../networks/task_api';
 import * as TaskApi from '../networks/task_api';
+import TextInputField from './forms/TextInputField';
 
 interface AddEditTaskDialogProps{
     taskToEdit?: Task,
@@ -46,25 +47,8 @@ const AddEditTaskDialog = ({taskToEdit, onDismiss, onTaskSaved}: AddEditTaskDial
         
         <Modal.Body>
           <Form id='addEditTaskForm' onSubmit={handleSubmit(onSubmit)}>
-            <Form.Group className="mb-3" >
-              <Form.Control
-                type="text"
-                placeholder='Title'
-                isInvalid={!!errors.title}
-                {...register("title", { required: "Required"})}
-              />
-              <Form.Control.Feedback type='invalid'>
-                {errors.title && errors.title.message}
-              </Form.Control.Feedback >
-            </Form.Group>
-            <Form.Group className='mb-3'>
-              <Form.Control
-                as="textarea"
-                rows={5}
-                placeholder='Description'
-                {...register("description")}
-              />
-            </Form.Group>
+            <TextInputField name='title' type='text' placeholder="Title" register={register} registerOptions={{ required: "Required"}} error={errors.title} />
+            <TextInputField name='description' rows={5}  as='textarea' placeholder="Description" register={register}/>
           </Form>
         </Modal.Body>
         <Modal.Footer>
