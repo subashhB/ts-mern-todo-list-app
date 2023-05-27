@@ -7,6 +7,7 @@ import * as TasksApi from "./networks/task_api";
 import AddEditTaskDialog from "./components/AddEditTaskDialog";
 import { FaPlus } from "react-icons/fa";
 import { Spinner } from "react-bootstrap";
+import SignUpModal from "./components/SignUpModal";
 
 function App() {
   const [tasks, setTasks] = useState<TaskModel[]>([]);
@@ -120,6 +121,7 @@ function App() {
             }}
           />
         )}
+        {true && <SignUpModal onDismiss={()=>{}} onSignUpSuccessful={()=>{}} />}
       </Container>
     </div>
   );
