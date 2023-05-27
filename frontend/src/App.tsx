@@ -9,122 +9,67 @@ import { FaPlus } from "react-icons/fa";
 import { Spinner } from "react-bootstrap";
 import SignUpModal from "./components/SignUpModal";
 import LoginModal from "./components/LoginModal";
+import NavbarComponent from "./components/NavbarComponent";
+import { User } from "./models/user";
+import TasksPageLoggedInView from "./components/TasksPageLoggedInView";
+import TaskPageLoggedOutView from "./components/TaskPageLoggedOutView";
 
 function App() {
-  const [tasks, setTasks] = useState<TaskModel[]>([]);
-  const [taskLoading, setTaskLoading] = useState(false);
-  const [showTaskLoadingError, setShowTaskLoadingError] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState<TaskModel | null>(null);
+  const [loggedInUser, setLoggedInuser] = useState<User | null>(null);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    async function loadTasks() {
+    async function fetchLoggedInuser() {
       try {
-        setShowTaskLoadingError(false);
-        setTaskLoading(true);
-        const tasks = await TasksApi.fetchTasks();
-        setTasks(tasks);
+        const user = await TasksApi.getLoggedInUser();
+        setLoggedInuser(user);
       } catch (error) {
-        console.log(error);
-        setShowTaskLoadingError(true);
-      } finally {
-        setTaskLoading(false);
+        console.error(error);
       }
     }
-    loadTasks();
+    fetchLoggedInuser();
   }, []);
-
-  async function deleteTask(task: TaskModel) {
-    try {
-      await TasksApi.deleteTask(task._id);
-      setTasks(tasks.filter((existingTask) => existingTask._id !== task._id));
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    }
-  }
-
-  async function completeTask(task: TaskModel) {
-    try {
-      await TasksApi.completeTask(task._id);
-      setTasks(
-        tasks.map((existingTask) =>
-          existingTask._id === task._id
-            ? { ...existingTask, completed: true }
-            : existingTask
-        )
-      );
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    }
-  }
-
-  const tasksGrid = (
-    <>
-      {tasks.map((task) => (
-        // *It is similar to (note)=>{setTaskToEdit(note)}
-        <Task
-          onTaskClicked={setTaskToEdit}
-          onCompleteTaskClicked={completeTask}
-          onDeleteTaskClicked={deleteTask}
-          key={task._id}
-          task={task}
-        />
-      ))}
-    </>
-  );
 
   return (
     <div className="App">
-      <Container>
-        <Button
-          style={{ margin: "auto", display: "block", marginTop: "20px" }}
-          onClick={() => {
-            setShowModal(true);
-          }}
-        >
-          <FaPlus style={{ marginRight: "10px" }} />
-          Add new Task
-        </Button>
-        {taskLoading && <Spinner animation="border" variant="primary" />}
-        {showTaskLoadingError && (
-          <p>Something went wrong. Please refresh the page.</p>
-        )}
-        {!taskLoading && !showTaskLoadingError && (
-          <>{tasks.length > 0 ? tasksGrid : <p>Wow, such empty.</p>}</>
-        )}
-        {showModal && (
-          <AddEditTaskDialog
-            onDismiss={() => setShowModal(false)}
-            onTaskSaved={(newTask) => {
-              console.log(showModal);
-              setTasks([...tasks, newTask]);
-              setShowModal(false);
-            }}
-          />
-        )}
-        {taskToEdit && (
-          <AddEditTaskDialog
-            taskToEdit={taskToEdit}
-            onDismiss={() => {
-              setTaskToEdit(null);
-            }}
-            onTaskSaved={(taskToEdit) => {
-              setTasks(
-                tasks.map((existingTask) =>
-                  existingTask._id === taskToEdit._id
-                    ? taskToEdit
-                    : existingTask
-                )
-              );
-              setTaskToEdit(null);
-            }}
-          />
-        )}
-        {true && <SignUpModal onDismiss={()=>{}} onSignUpSuccessful={()=>{}} />}
-        { true && <LoginModal onDismiss={()=>{}} onLoginSuccessful={()=>{}} /> }
+      <NavbarComponent
+        loggedInUser={loggedInUser}
+        onSignUpClicked={() => {
+          setShowSignUpModal(true);
+        }}
+        onLoggedInClicked={() => {
+          setShowLoginModal(true);
+        }}
+        onLogoutSuccessful={() => {
+          setLoggedInuser(null);
+        }}
+      />
+      <Container className="mt-8">
+        {loggedInUser ? <TasksPageLoggedInView /> : <TaskPageLoggedOutView />}
       </Container>
+      {showSignUpModal && (
+        <SignUpModal
+          onDismiss={() => {
+            setShowSignUpModal(false);
+          }}
+          onSignUpSuccessful={(user) => {
+            setLoggedInuser(user);
+            setShowSignUpModal(false);
+          }}
+        />
+      )}
+      {showLoginModal && (
+        <LoginModal
+          onDismiss={() => {
+            setShowLoginModal(false);
+          }}
+          onLoginSuccessful={(user) => {
+            setLoggedInuser(user);
+            setShowLoginModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
