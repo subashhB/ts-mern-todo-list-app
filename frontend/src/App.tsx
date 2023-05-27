@@ -8,6 +8,7 @@ import AddEditTaskDialog from "./components/AddEditTaskDialog";
 import { FaPlus } from "react-icons/fa";
 import { Spinner } from "react-bootstrap";
 import SignUpModal from "./components/SignUpModal";
+import LoginModal from "./components/LoginModal";
 
 function App() {
   const [tasks, setTasks] = useState<TaskModel[]>([]);
@@ -122,6 +123,7 @@ function App() {
           />
         )}
         {true && <SignUpModal onDismiss={()=>{}} onSignUpSuccessful={()=>{}} />}
+        { true && <LoginModal onDismiss={()=>{}} onLoginSuccessful={()=>{}} /> }
       </Container>
     </div>
   );
