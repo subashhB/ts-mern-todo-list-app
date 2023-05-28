@@ -7,6 +7,7 @@ import createHttpError, { isHttpError } from "http-errors";
 import session from "express-session";
 import env from "./utils/validateEnv";
 import MongoStore from "connect-mongo";
+import { requiresAuth } from "./middleware/auth";
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use(session({
         mongoUrl: env.MONGO_CONNECTION_STRING,
     }),
 }));
-app.use('/api/tasks', taskRoutes);
+app.use('/api/tasks', requiresAuth, taskRoutes);
 app.use('/api/users', userRoutes);
 
 app.use((req,res,next)=>{  
