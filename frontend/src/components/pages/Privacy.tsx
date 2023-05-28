@@ -2,7 +2,7 @@ import React from 'react'
 
 const Privacy = () => {
   return (
-    <div><p></p></div>
+    <div><p>We care about your Privacy. Promise!</p></div>
   )
 }
 

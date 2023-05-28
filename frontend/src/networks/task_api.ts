@@ -1,3 +1,4 @@
+import { ConflictError, Unauthorized } from "../components/errors/http_error";
 import { Task } from "../models/task";
 import { User } from "../models/user";
 
@@ -8,7 +9,14 @@ async function fetchData(input: RequestInfo, init?: RequestInit){
     }else{
         const errorBody = await res.json();
         const errorMessage = errorBody.error;
-        throw Error(errorMessage);
+
+        if(res.status === 401){
+            throw new Unauthorized(errorMessage);
+        }else if(res.status === 409){
+            throw new ConflictError(errorMessage);
+        }else{
+            throw Error("Request failed with staus code: " + res.status + "Message: "+errorMessage);
+        }
     }
 }
 
